@@ -1,7 +1,8 @@
-from multiprocessing.managers import Token
+from rest_framework.authtoken.models import Token
 from django.shortcuts import redirect, render
 from rest_framework.views import APIView
 from .forms import VoterRegistrationForm, VoterLoginForm
+from .serializers import VoterLoginSerializer
 
 # Create your views here.
 class RegisterVoterView(APIView):
