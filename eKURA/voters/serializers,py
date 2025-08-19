@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from eKURA.voters.models import Voter
+from .models import Voter
 
 class VoterSerializer(serializers.ModelSerializer):
     class Meta:

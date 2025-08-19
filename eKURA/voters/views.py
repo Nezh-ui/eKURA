@@ -1,3 +1,4 @@
+from multiprocessing.managers import Token
 from django.shortcuts import redirect, render
 from rest_framework.views import APIView
 from .forms import VoterRegistrationForm, VoterLoginForm
@@ -22,8 +23,9 @@ class LoginVoterView(APIView):
 
     def post(self, request):
         form = VoterLoginForm(request.POST)
-        token = request.data.get('token')
-        if form.is_valid():
-            # Authenticate user
+        serializer = VoterLoginSerializer(data=request.data)
+        if serializer.is_valid(): 
+            ID = serializer.validated_data.get('ID')
+            token = Token.objects.get_or_create(user__ID=ID)
             return redirect('voters:login_success')
         return render(request, 'voters/login.html', {'form': form})
