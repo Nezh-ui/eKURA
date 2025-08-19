@@ -1,0 +1,20 @@
+from rest_framework import serializers
+
+from eKURA.voters.models import Voter
+
+class VoterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Voter
+        fields = ['name', 'email', 'age', 'ID', 'location', 'voted']
+        read_only_fields = ['voted']
+
+class VoterLoginSerializer(serializers.Serializer):
+    ID = serializers.CharField(max_length=100)
+
+    def validate(self, attrs):
+        ID = attrs.get('ID')
+
+        if not ID:      
+            raise serializers.ValidationError("All fields are required.")
+
+        return attrs
