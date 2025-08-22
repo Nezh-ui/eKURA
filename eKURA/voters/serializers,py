@@ -30,6 +30,7 @@ class VoterLoginSerializer(serializers.Serializer):
         return attrs
 
 class VoterSerializer(serializers.ModelSerializer):
+    ID = serializers.StringRelatedField(source='ID')
     class Meta:
         model = Voter
         fields = ['name', 'email', 'age', 'ID', 'location', 'voted']
