@@ -21,6 +21,5 @@ app_name = 'Elections'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
     path('Elections/', include('Elections.urls')),
 ]

@@ -1,8 +1,7 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 
-User = get_user_model()
+
 
 # Create your models here.
 class Election(models.Model):
@@ -29,7 +28,7 @@ class Voter(AbstractUser):
         return self.username
 
 class Vote(models.Model):
-    voter = models.ForeignKey(User, on_delete=models.CASCADE)
+    voter = models.ForeignKey(Voter, on_delete=models.CASCADE)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name='votes')
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
