@@ -1,7 +1,7 @@
 from rest_framework.authtoken.models import Token
 from rest_framework import serializers
-from .models import Voter
 from django.contrib.auth import get_user_model
+from .models import Voter
 
 user = get_user_model()
 class VoterRegistrationSerializer(serializers.ModelSerializer):
