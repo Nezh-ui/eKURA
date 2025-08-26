@@ -64,26 +64,3 @@ class VoterLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("All fields are required.")
         return attrs
 
-class VoteSerializer(serializers.ModelSerializer):
-    voter = serializers.StringRelatedField()
-    candidate = serializers.StringRelatedField()
-    election = serializers.StringRelatedField()
-
-    class Meta:
-        model = Vote
-        fields = '__all__'
-
-    def validate(self, data):
-        voter = self.context['request'].user
-        candidate = data['candidate']
-        election = data['election']
-
-        if Vote.objects.filter(voter=voter, candidate=candidate, election=election).exists():
-            raise serializers.ValidationError("You have already voted for this candidate in this election.")
-        if not voter.is_authenticated:
-            raise serializers.ValidationError("You must be logged in to vote.")
-        return data
-
-    def create(self, validated_data):
-        validated_data['voter'] = self.context['request'].user
-        return super().create(validated_data)

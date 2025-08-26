@@ -12,8 +12,7 @@ class Election(models.Model):
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
     party = models.CharField(max_length=100)
-    election = models.ForeignKey(Election, on_delete=models.CASCADE)
-    votes = models.PositiveIntegerField(default=0) 
+    election = models.ForeignKey(Election, on_delete=models.CASCADE) 
 
 class Voter(AbstractUser):
     name = models.CharField(max_length=100)

@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import RegisterVoterView, LoginVoterView
+from .views import LoginVoterView, vote
+from .views import register
 
 urlpatterns = [
-    path('register/', RegisterVoterView.as_view(), name='register'),
+    path('register/', register, name='register'),
     path('login/', LoginVoterView.as_view(), name='login'),
+    path('vote/<int:candidate_id>/', vote, name='vote'),
 ]
