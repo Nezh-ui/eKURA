@@ -14,17 +14,17 @@ class VoteSerializer(serializers.ModelSerializer):
         model = Vote
         fields = ['voter', 'candidate', 'election']
 
-    def validate(self, data):
+    def validate(self, attrs):
         voter = self.context['request'].user
-        candidate = data['candidate']
-        election = data['election']
+        candidate = attrs['candidate']
+        election = attrs['election']
 
         if Vote.objects.filter(voter=voter, candidate=candidate, election=election).exists():
             raise serializers.ValidationError("You have already voted for this candidate in this election.")
         if not voter.is_authenticated:
             raise serializers.ValidationError("You must be logged in to vote.")
-        return data
-    
+        return attrs
+
     def create(self, validated_data):
         validated_data['voter'] = self.context['request'].user
         return super().create(validated_data)
