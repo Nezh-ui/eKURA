@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <h2>Voter Registration</h2>
+
+    <form method="post" action="Elections/register/">
+        <input type="hidden" name="csrfmiddlewaretoken" value="GDWoh1Gooi51AM4otG6IkXHAhnZ5LgYCUcWt3ytCUJXpiMDMngtR77EID31TMwG8">
+        <p>
+    <label for="id_name">Name:</label>
+    <input type="text" name="name" maxlength="100" required id="id_name">
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_age">Age:</label>
+    <input type="number" name="age" min="18" required id="id_age">
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_national_id">National id:</label>
+    <input type="text" name="national_id" maxlength="20" required id="id_national_id">
+    
+    
+  </p>
+
+  
+  <p>
+    <label for="id_password">Password:</label>
+    <input type="password" name="password" maxlength="100" required id="id_password">
+  </p>
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already registered? <a href="/Elections/login/">Login here</a></p>
+</body>
+</html>
+

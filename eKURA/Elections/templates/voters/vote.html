@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cast Your Vote</title>
+</head>
+<body>
+    <h2>Welcome, {{ request.user.name }}!</h2>
+
+    {% if request.user.voted %}
+        <p style="color: green;">✅ You have already voted. Thank you for participating!</p>
+        <a href="{% url 'results' %}">See Results</a>
+    {% else %}
+        <p>Please select a candidate to cast your vote:</p>
+
+        <ul>
+        {% for candidate in candidates %}
+            <li>
+                {{ candidate.name }} ({{ candidate.party }})
+                <form method="post" action="{% url 'vote' candidate.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Vote</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
