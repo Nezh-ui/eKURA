@@ -1,9 +1,30 @@
+from email import message
+import token
+from urllib import response
 from rest_framework import serializers
 from .models import Vote, Candidate, Voter
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
+from rest_framework.validators import UniqueValidator
+from rest_framework.response import Response
 
 User = get_user_model()
+
+class RegisterSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=100, required=True)
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(max_length=100, required=True)
+    national_id = serializers.CharField(max_length=100, required=True, validators=[UniqueValidator(queryset=Voter.objects.all())])
+
+    def create(self, validated_data):
+        voter = get_user_model().objects.create_user(
+            username=validated_data['email'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+            national_id=validated_data['national_id']
+        )
+        Token.objects.create(user=voter)
+        return Response({'token': token.key, 'message': "User created successfully"})
 
 class VoteSerializer(serializers.ModelSerializer):
     voter = serializers.StringRelatedField()
@@ -44,23 +65,37 @@ class VoterRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=100)
     national_id = serializers.CharField(max_length=100)
 
+    class Meta:
+        model = Voter
+        fields = ['email', 'password', 'national_id']
+
     def create(self, validated_data):
         voter = get_user_model().objects.create_user(
-            username=validated_data['email'],
+            username=validated_data['national_id'],
             email=validated_data['email'],
-            password=validated_data['Password'],
-            ID=validated_data['ID']
+            password=validated_data['password'],
+            national_id=validated_data['national_id']
         )
         Token.objects.create(user=voter)
-        return Voter.objects.create(user=voter, ID=validated_data['ID'])
+        return Voter.objects.create(user=voter, national_id=validated_data['national_id'])
 
 class VoterLoginSerializer(serializers.Serializer):
     national_id = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=100)
 
-    def validate(self, attrs):
-        national_id = attrs.get('national_id')
-        if not national_id:
-            raise serializers.ValidationError("All fields are required.")
-        return attrs
+    class Meta:
+        model = Voter
+        fields = ['national_id', 'password']
+
+    def validate(self, data):
+        national_id = data.get('national_id')
+        password = data.get('password')
+        if national_id and password:
+            user = authenticate(request=self.context.get('request'),
+                                national_id=national_id, password=password)
+            if user is not None:
+                return user
+            raise serializers.ValidationError("Invalid credentials.")
+        raise serializers.ValidationError("All fields are required.")
+        return data
 

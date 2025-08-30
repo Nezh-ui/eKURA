@@ -1,9 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.contrib.auth import get_user_model
 
 
 # Create your models here.
+class Voter(AbstractUser):
+    national_id = models.CharField(max_length=100, unique=True)
+    email = models.EmailField(unique=True)
+    age = models.PositiveIntegerField()
+    password = models.CharField(max_length=100)
+    voted = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'national_id'
+    REQUIRED_FIELDS = ['email', 'age', 'password']
+
+    def __str__(self):
+        return self.national_id
+
+
 class Election(models.Model):
     title = models.CharField(max_length=100)
     date = models.DateField()
@@ -11,25 +25,10 @@ class Election(models.Model):
 class Candidate(models.Model):
     name = models.CharField(max_length=100)
     party = models.CharField(max_length=100)
-    election = models.ForeignKey(Election, on_delete=models.CASCADE) 
-    
+    election = models.ForeignKey(Election, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
-
-class Voter(AbstractUser):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    national_id = models.CharField(max_length=20, unique=True)
-    age = models.PositiveIntegerField()
-    password = models.CharField(max_length=100)
-    voted = models.BooleanField(default=False)
-
-    USERNAME_FIELD = 'national_id' 
-    REQUIRED_FIELDS = [ 'email', 'name', 'age' 'password']
-
-    def __str__(self):
-        return self.username
 
 class Vote(models.Model):
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE)

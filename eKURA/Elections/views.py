@@ -1,10 +1,11 @@
+from email.mime import message
 from pyexpat.errors import messages
 from rest_framework.authtoken.models import Token
 from django.shortcuts import redirect, render
 from rest_framework.response import Response
 from .models import Candidate, Vote
-from .forms import VoterRegistrationForm, VoterLoginForm
-from .serializers import CandidateSerializer
+from .serializers import CandidateSerializer, VoterRegistrationSerializer
+from .serializers import VoterLoginSerializer
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -14,23 +15,25 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 class RegistrationView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
-        form = VoterRegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
+        serializer = VoterRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response({'message': 'Registration successful'})
-        return Response({'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginVoterView(APIView):
     def post(self, request):
-        form = VoterLoginForm(request.POST)
-        if form.is_valid():
-            national_id = form.cleaned_data['national_id']
-            password = form.cleaned_data['password']
-            user = authenticate(request, national_id=national_id, password=password)
+        serializer = VoterLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'token': token.key, 'national_id': user.national_id, 'message': 'Login successful'})
+
+
             if user is not None:
                 login(request, user)
                 return redirect('voters:login_success')
-        return render(request, 'voters/login.html', {'form': form})
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @login_required
 def vote(request, candidate_id):
