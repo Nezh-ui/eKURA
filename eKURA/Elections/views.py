@@ -59,13 +59,8 @@ class CandidateListCreateView(generics.ListCreateAPIView):
     serializer_class = CandidateSerializer
     permission_classes = [AllowAny]
 
-class CandidateAPIView(APIView):
-    permission_classes = [AllowAny]
 
-    def get(self, request, candidate_id):
-        try:
-            candidate = Candidate.objects.get(id=candidate_id)
-            serializer = CandidateSerializer(candidate)
-            return Response(serializer.data)
-        except Candidate.DoesNotExist:
-            return Response({'error': 'Candidate not found'}, status=status.HTTP_404_NOT_FOUND)
+class CandidateDetailView(generics.RetrieveAPIView):
+    queryset = Candidate.objects.all()
+    serializer_class = CandidateSerializer
+    permission_classes = [AllowAny]
