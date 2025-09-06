@@ -8,6 +8,7 @@ from .models import Candidate, Vote
 from .serializers import CandidateSerializer, User, VoterRegistrationSerializer
 from .serializers import VoterLoginSerializer
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from rest_framework import status
@@ -24,7 +25,8 @@ class RegistrationView(APIView):
             return Response({'message': 'Registration successful', 'voter': VoterRegistrationSerializer(voter).data})
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-class LoginVoterView(APIView):
+class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         serializer = VoterLoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -36,6 +38,7 @@ class LoginVoterView(APIView):
             return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
+@login_required
 @permission_classes([IsAuthenticated])
 def vote_view(request, candidate_id):
     voter = request.user
@@ -53,14 +56,18 @@ def vote_view(request, candidate_id):
     voter.save()
 
     return Response({"message": "Vote recorded successfully"}, status=status.HTTP_201_CREATED)
+class voterViewset(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = VoterRegistrationSerializer
+    permission_classes = [AllowAny]
 
-class CandidateListCreateView(generics.ListCreateAPIView):
+    def voter_list(self, request):
+        voters = self.queryset
+        serializer = self.serializer_class(voters, many=True)
+        return Response(serializer.data)
+
+class CandidateViewset(viewsets.ModelViewSet):
     queryset = Candidate.objects.all()
     serializer_class = CandidateSerializer
     permission_classes = [AllowAny]
 
-
-class CandidateDetailView(generics.RetrieveAPIView):
-    queryset = Candidate.objects.all()
-    serializer_class = CandidateSerializer
-    permission_classes = [AllowAny]

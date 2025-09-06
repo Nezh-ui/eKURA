@@ -31,7 +31,7 @@ class VoterManager(BaseUserManager):
 
 class Voter(AbstractUser):
     username = None  # Remove the username field
-    national_id = models.CharField(max_length=100, unique=True)
+    national_id = models.CharField(max_length=100, unique=True )
     email = models.EmailField(unique=True)
     age = models.PositiveIntegerField()
     voted = models.BooleanField(default=False)

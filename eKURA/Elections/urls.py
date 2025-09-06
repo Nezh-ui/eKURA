@@ -1,13 +1,12 @@
 from django.urls import path
-from .views import CandidateDetailView, LoginVoterView, RegistrationView, CandidateListCreateView, vote_view
+from .views import LoginView, RegistrationView, vote_view, CandidateViewset
 from django.contrib.auth import views as auth_views
 
 app_name = 'Elections'
 urlpatterns = [
     path('register/', RegistrationView.as_view(), name='register'),
-    path('login/', LoginVoterView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('vote/<int:candidate_id>/', vote_view, name='vote'),
-    path('candidates/', CandidateListCreateView.as_view(), name='candidate-list_create'),
-    path('candidates/<int:candidate_id>/', CandidateDetailView.as_view(), name='candidate_detail'),
+    path('candidates/', CandidateViewset.as_view({'get': 'list', 'post': 'create'}), name='candidates'),
 ]
