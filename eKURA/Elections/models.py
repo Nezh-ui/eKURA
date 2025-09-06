@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 # Elections/models.py
 from django.contrib.auth.models import BaseUserManager
@@ -50,9 +52,11 @@ class Candidate(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     party = models.CharField(max_length=100)
-    
-    def vote_count(self):
-        return self.votes.count()
+    manifesto = models.TextField(max_length=1000)
+    vote_count = models.IntegerField(default=0)
+
+    def get_vote_count(self):
+        return self.vote_count
 
     def __str__(self):
         return self.name
